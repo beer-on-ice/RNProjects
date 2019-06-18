@@ -3,6 +3,11 @@ import {
   createSwitchNavigator,
   createAppContainer
 } from 'react-navigation'
+import { connect } from 'react-redux'
+import {
+  createReactNavigationReduxMiddleware,
+  createReduxContainer
+} from 'react-navigation-redux-helpers'
 
 import WelcomePage from '../page/WelcomePage'
 import HomePage from '../page/HomePage'
@@ -34,7 +39,11 @@ const MainNavigator = createStackNavigator({
   }
 })
 
-export default createAppContainer(
+// 选择哪个作为根路由
+export const rootCom = 'Init'
+
+// 配置路由
+export const RootNavigator = createAppContainer(
   createSwitchNavigator(
     {
       Init: InitNavigator,
@@ -47,3 +56,22 @@ export default createAppContainer(
     }
   )
 )
+
+/*
+ * 初始化react-navigation与redux中间件
+ */
+export const middleware = createReactNavigationReduxMiddleware(
+  state => state.nav,
+  'root'
+)
+
+/*
+ * 将根导航器组件传递给reduxifyNavigator 函数
+ */
+const AppWithNavigationState = createReduxContainer(RootNavigator, 'root')
+
+const mapStateToProps = state => ({
+  state: state.nav
+})
+
+export default connect(mapStateToProps)(AppWithNavigationState)

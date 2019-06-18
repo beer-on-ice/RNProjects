@@ -1,4 +1,6 @@
+// 可配置自定义底部导航栏
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
 import { createBottomTabNavigator, createAppContainer } from 'react-navigation'
 import { BottomTabBar } from 'react-navigation-tabs'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
@@ -67,43 +69,28 @@ const TABS = {
   }
 }
 
+// tabBarComponent - 可选，覆盖用作标签栏的组件
 class TabBarComponent extends Component {
   constructor(props) {
     super(props)
-    this.theme = {
-      tintColor: props.activeTintColor,
-      updateTime: new Date().getTime()
-    }
   }
   render() {
-    const { routes, index } = this.props.navigation.state
-    if (routes[index].params) {
-      const { theme } = routes[index].params
-      // 以最新的更新时间为主
-      if (theme && theme.updateTime > this.theme.updateTime) {
-        this.theme = theme
-      }
-    }
-    return (
-      <BottomTabBar
-        {...this.props}
-        activeTintColor={this.theme.tintColor || this.theme.activeTintColor}
-      />
-    )
+    return <BottomTabBar {...this.props} activeTintColor={this.props.theme} />
   }
 }
 
-export default class DynamicTabNavigator extends Component {
+class DynamicTabNavigator extends Component {
   constructor(props) {
     super(props)
     console.disableYellowBox = true // 去除黄色警告
   }
   _tabNavigator = () => {
+    const { theme } = this.props
     const { PopularPage, TrendingPage, FavoritePage, MyPage } = TABS
     const tabs = { PopularPage, TrendingPage, FavoritePage, MyPage } // 根据需要定制显示的tab
     return createAppContainer(
       createBottomTabNavigator(tabs, {
-        tabBarComponent: TabBarComponent
+        tabBarComponent: props => <TabBarComponent theme={theme} {...props} />
       })
     )
   }
@@ -113,3 +100,11 @@ export default class DynamicTabNavigator extends Component {
     return <Tab />
   }
 }
+
+const mapStateToProps = state => {
+  return {
+    theme: state.reducer_theme.theme
+  }
+}
+
+export default connect(mapStateToProps)(DynamicTabNavigator)

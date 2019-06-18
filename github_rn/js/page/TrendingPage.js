@@ -1,21 +1,19 @@
 import React, { Component } from 'react'
+import { connect } from 'react-redux'
+import { actionThemes } from './../action'
+
 import { StyleSheet, Text, View, Button } from 'react-native'
 
-export default class TrendingPage extends Component {
+class TrendingPage extends Component {
   render() {
-    const { navigation } = this.props
+    const { onThemeChange } = this.props
     return (
       <View style={styles.container}>
         <Text style={styles.welcome}>TrendingPage</Text>
         <Button
           title="改变主题色"
           onPress={() => {
-            navigation.setParams({
-              theme: {
-                tintColor: 'red',
-                updateTime: new Date().getTime()
-              }
-            })
+            onThemeChange('#096')
           }}
         />
       </View>
@@ -36,3 +34,15 @@ const styles = StyleSheet.create({
     margin: 10
   }
 })
+
+const mapDispatchToProps = dispatch => ({
+  onThemeChange: theme => {
+    console.log(actionThemes.onThemeChange)
+    dispatch(actionThemes.onThemeChange(theme))
+  }
+})
+
+export default connect(
+  null,
+  mapDispatchToProps
+)(TrendingPage)

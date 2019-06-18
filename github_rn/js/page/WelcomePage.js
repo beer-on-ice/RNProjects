@@ -4,6 +4,7 @@ import NavigationUtil from './../navigator/NavigationUtil'
 
 export default class WelcomePage extends Component {
   componentDidMount() {
+    // 模拟欢迎页
     this.timer = setTimeout(() => {
       NavigationUtil.resetToHomePage({
         navigation: this.props.navigation

@@ -1,8 +1,7 @@
 import React, { Component } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 
-type Props = {}
-export default class TrendingPage extends Component<Props> {
+export default class TrendingPage extends Component {
   render() {
     return (
       <View style={styles.container}>
