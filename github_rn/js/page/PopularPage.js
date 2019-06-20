@@ -41,10 +41,28 @@ class PopularTab extends Component {
       <View style={styles.container}>
         <Text style={styles.welcome}>{tabLabel}</Text>
         <Button
+          title="跳转到详情页"
           onPress={() => {
             NavigationUtil.goPage({}, 'DetailPage')
           }}
-          title="跳转到详情页"
+        />
+        <Button
+          title="跳转到FetchDemoPage"
+          onPress={() => {
+            NavigationUtil.goPage({}, 'FetchDemoPage')
+          }}
+        />
+        <Button
+          title="AsyncStorage 的使用"
+          onPress={() => {
+            NavigationUtil.goPage({}, 'AsyncStorageDemoPage')
+          }}
+        />
+        <Button
+          title="离线缓存的使用"
+          onPress={() => {
+            NavigationUtil.goPage({}, 'DataStoreDemoPage')
+          }}
         />
       </View>
     )

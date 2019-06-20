@@ -1,11 +1,16 @@
 import React, { Component } from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { connect } from 'react-redux'
+import { StyleSheet, Text, View, Button } from 'react-native'
 
-export default class TrendingPage extends Component {
+import { actionThemes } from './../action'
+
+class FavoritePage extends Component {
   render() {
+    const { onThemeChange } = this.props
     return (
       <View style={styles.container}>
-        <Text style={styles.welcome}>TrendingPage</Text>
+        <Text style={styles.welcome}>FavoritePage</Text>
+        <Button title="改变主题色" onPress={() => onThemeChange('red')} />
       </View>
     )
   }
@@ -24,3 +29,14 @@ const styles = StyleSheet.create({
     margin: 10
   }
 })
+
+const mapDispatchToProps = dispatch => ({
+  onThemeChange: theme => {
+    dispatch(actionThemes.onThemeChange(theme))
+  }
+})
+
+export default connect(
+  null,
+  mapDispatchToProps
+)(FavoritePage)

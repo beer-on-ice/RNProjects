@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { actionThemes } from './../action'
-
 import { StyleSheet, Text, View, Button } from 'react-native'
+
+import { actionThemes } from './../action'
 
 class TrendingPage extends Component {
   render() {
@@ -10,12 +10,7 @@ class TrendingPage extends Component {
     return (
       <View style={styles.container}>
         <Text style={styles.welcome}>TrendingPage</Text>
-        <Button
-          title="改变主题色"
-          onPress={() => {
-            onThemeChange('#096')
-          }}
-        />
+        <Button title="改变主题色" onPress={() => onThemeChange('#096')} />
       </View>
     )
   }
@@ -37,7 +32,6 @@ const styles = StyleSheet.create({
 
 const mapDispatchToProps = dispatch => ({
   onThemeChange: theme => {
-    console.log(actionThemes.onThemeChange)
     dispatch(actionThemes.onThemeChange(theme))
   }
 })

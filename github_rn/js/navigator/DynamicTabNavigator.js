@@ -6,8 +6,6 @@ import { BottomTabBar } from 'react-navigation-tabs'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
 
-import NavigationUtil from './../navigator/NavigationUtil'
-
 import PopularPage from './../page/PopularPage'
 import FavoritePage from './../page/FavoritePage'
 import TrendingPage from './../page/TrendingPage'
@@ -71,9 +69,6 @@ const TABS = {
 
 // tabBarComponent - 可选，覆盖用作标签栏的组件
 class TabBarComponent extends Component {
-  constructor(props) {
-    super(props)
-  }
   render() {
     return <BottomTabBar {...this.props} activeTintColor={this.props.theme} />
   }
@@ -85,17 +80,21 @@ class DynamicTabNavigator extends Component {
     console.disableYellowBox = true // 去除黄色警告
   }
   _tabNavigator = () => {
+    // if (this.Tabs) {
+    //   return this.Tabs
+    // }
     const { theme } = this.props
     const { PopularPage, TrendingPage, FavoritePage, MyPage } = TABS
     const tabs = { PopularPage, TrendingPage, FavoritePage, MyPage } // 根据需要定制显示的tab
-    return createAppContainer(
+
+    this.Tabs = createAppContainer(
       createBottomTabNavigator(tabs, {
         tabBarComponent: props => <TabBarComponent theme={theme} {...props} />
       })
     )
+    return this.Tabs
   }
   render() {
-    NavigationUtil.navigation = this.props.navigation
     const Tab = this._tabNavigator()
     return <Tab />
   }

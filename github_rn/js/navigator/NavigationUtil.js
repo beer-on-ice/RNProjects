@@ -8,7 +8,7 @@ export default class NavigationUtil {
   static goPage(params, page) {
     const navigation = NavigationUtil.navigation
     if (!navigation) {
-      consoe.log('NavigationUtil.navigation can not be null')
+      console.log('NavigationUtil.navigation can not be null')
     } else {
       navigation.navigate(page, { ...params })
     }
