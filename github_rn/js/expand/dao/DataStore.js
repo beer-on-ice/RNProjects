@@ -15,7 +15,6 @@ export default class DataStore {
   //  保存数据
   saveData(url, data, callback) {
     if (!data || !url) return
-    console.log(url, data)
     AsyncStorage.setItem(url, JSON.stringify(this._wrapData(data)), callback)
   }
   _wrapData(data) {
