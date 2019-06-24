@@ -42,7 +42,7 @@ export default class PopularPage extends Component {
     return tabs
   }
 
-  render(loadMore) {
+  render() {
     const TabNavigator = createAppContainer(
       createMaterialTopTabNavigator(this._genTabs(), {
         tabBarOptions: {
@@ -83,19 +83,22 @@ class PopularTab extends Component {
     if (!store) {
       store = {
         items: [],
-        isLoading: false,
         projectModes: [], //要显示的数据
+        isLoading: false,
         hideLoadingMore: true //默认隐藏加载更多
       }
     }
+    return store
   }
 
   // 加载数据
   loadData = loadMore => {
     const { onLoadPopularDataAsync, onLoadMorePopularAsync } = this.props
+
     const store = this._store()
     const url = this.getFetchUrl(this.storeName)
 
+    // 是否是加载更多
     if (loadMore) {
       onLoadMorePopularAsync(
         this.storeName,
@@ -103,10 +106,11 @@ class PopularTab extends Component {
         PAGE_SIZE,
         store.items,
         callBack => {
-          this.$refs.toast.show('没有更多了')
+          this.refs.toast.show('没有更多了')
         }
       )
     } else {
+      // 主要是刚进入时的加载，分出第一组要展示的数据
       onLoadPopularDataAsync(this.storeName, url, PAGE_SIZE)
     }
   }
@@ -115,14 +119,14 @@ class PopularTab extends Component {
   getFetchUrl = key => URL + key + QUERY_STR
 
   // 生成底部
-  genIndicator = () =>
-    this._store().hideLoadingMore ? null : (
-      <View style={style.indicatorContainer}>
-        <ActivityIndicator style={style.indicator}>
-          <Text>正在加载更多</Text>
-        </ActivityIndicator>
+  genIndicator = () => {
+    return this._store().hideLoadingMore ? null : (
+      <View style={styles.indicatorContainer}>
+        <Text>正在加载更多</Text>
+        <ActivityIndicator style={styles.indicator} />
       </View>
     )
+  }
 
   // 渲染列表内容
   renderItem = data => {
@@ -153,7 +157,16 @@ class PopularTab extends Component {
           }
           ListFooterComponent={() => this.genIndicator()}
           onEndReached={() => {
-            this.loadData(true)
+            // 到底部就加载
+            setTimeout(() => {
+              if (this.canLoadMore) {
+                this.loadData(true)
+                this.canLoadMore = false
+              }
+            }, 100)
+          }}
+          onMomentumScrollBegin={() => {
+            this.canLoadMore = true // fix 初始化时调用了reachend
           }}
         />
         <Toast ref={'toast'} position={'center'} />
@@ -169,15 +182,10 @@ const mapStateToProps = state => {
 }
 
 const mapDispatchToProps = dispatch => ({
-  onLoadPopularDataAsync: (storeName, url) =>
-    dispatch(actionPopular.onLoadPopularDataAsync(storeName, url)),
-  onLoadMorePopularAsync: (
-    storeName,
-    pageIndex,
-    pageSize,
-    dataArray,
-    callBack
-  ) =>
+  onLoadPopularDataAsync(storeName, url, pageSize) {
+    dispatch(actionPopular.onLoadPopularDataAsync(storeName, url, pageSize))
+  },
+  onLoadMorePopularAsync(storeName, pageIndex, pageSize, dataArray, callBack) {
     dispatch(
       actionPopular.onLoadMorePopularAsync(
         storeName,
@@ -187,6 +195,7 @@ const mapDispatchToProps = dispatch => ({
         callBack
       )
     )
+  }
 })
 
 const PopularTabPage = connect(

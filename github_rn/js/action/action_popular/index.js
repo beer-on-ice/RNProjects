@@ -5,7 +5,9 @@ import {
   POPULAR_LOAD_MORE_SUCCESS
 } from '../actionTypes'
 import DataStore from './../../expand/dao/DataStore'
-
+/*
+ * 流程：先通过onLoadPopularDataAsync获取最新全部数据items，经过handleData（模拟请求只能手动分组）分组出第一次要加载的数据projectModes，
+ */
 // 获取最热数据的异步action
 export const onLoadPopularDataAsync = (storeName, url, pageSize) => {
   return dispatch => {
@@ -19,7 +21,6 @@ export const onLoadPopularDataAsync = (storeName, url, pageSize) => {
         handleData(dispatch, storeName, data, pageSize)
       })
       .catch(err => {
-        console.log(err)
         dispatch({
           type: POPULAR_REFRESH_FAIL,
           storeName,
@@ -29,21 +30,9 @@ export const onLoadPopularDataAsync = (storeName, url, pageSize) => {
   }
 }
 
-const handleData = (dispatch, storeName, data, pageSize) => {
-  let fixItems = []
-  if (data && data.data && data.data.items) {
-    fixItems = data.data.items
-  }
-  dispatch({
-    type: POPULAR_REFRESH_SUCCESS,
-    items: fixItems, // 原始数据
-    projectModes:
-      pageSize > fixItems.length ? fixItems : fixItems.slice(0, pageSize), //第一次要加载的数据
-    storeName,
-    pageIndex: 1
-  })
-}
-
+/*
+ * 加载更多，根据原始数据items和pageindex来分出下一组并存到projectModes
+ */
 // 加载更多
 export const onLoadMorePopularAsync = (
   storeName,
@@ -82,4 +71,20 @@ export const onLoadMorePopularAsync = (
       }
     }, 500)
   }
+}
+
+// 处理分组
+const handleData = (dispatch, storeName, data, pageSize) => {
+  let fixItems = []
+
+  if (data && data.data && data.data.items) fixItems = data.data.items
+
+  dispatch({
+    type: POPULAR_REFRESH_SUCCESS,
+    items: fixItems, // 原始数据
+    projectModes:
+      pageSize > fixItems.length ? fixItems : fixItems.slice(0, pageSize), //第一次要加载的数据
+    storeName,
+    pageIndex: 1
+  })
 }

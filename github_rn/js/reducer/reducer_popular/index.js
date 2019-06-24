@@ -21,7 +21,8 @@ const onPopularRefresh = (state, action) => {
     ...state,
     [action.storeName]: {
       ...state[action.storeName],
-      isLoading: true
+      isLoading: true,
+      hideLoadingMore: true
     }
   }
 }

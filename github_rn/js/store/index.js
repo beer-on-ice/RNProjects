@@ -1,4 +1,4 @@
-import { applyMiddleware, createStore } from 'redux'
+import { applyMiddleware, createStore, compose } from 'redux'
 import thunk from 'redux-thunk'
 import reducers from './../reducer'
 import { middleware } from './../navigator/AppNavigator'
@@ -14,7 +14,14 @@ const logger = store => next => action => {
   console.log('nextState', store.getState())
 }
 
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
+  ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({})
+  : compose
+
 const middlewares = [middleware, logger, thunk]
 
 /** * 创建store */
-export default createStore(reducers, applyMiddleware(...middlewares))
+export default createStore(
+  reducers,
+  composeEnhancers(applyMiddleware(...middlewares))
+)
