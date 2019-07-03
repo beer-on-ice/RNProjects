@@ -1,29 +1,31 @@
 import {
-  POPULAR_REFRESH,
-  POPULAR_REFRESH_FAIL,
-  POPULAR_REFRESH_SUCCESS,
-  POPULAR_LOAD_MORE_SUCCESS
+  TRENDING_REFRESH,
+  TRENDING_REFRESH_FAIL,
+  TRENDING_REFRESH_SUCCESS,
+  TRENDING_LOAD_MORE_SUCCESS
 } from '../actionTypes'
 import DataStore, { FLAG_STORE } from './../../expand/dao/DataStore'
 import { handleData } from './../ActionUtil'
-/*
- * 流程：先通过onLoadPopularDataAsync获取最新全部数据items，经过handleData（模拟请求只能手动分组）分组出第一次要加载的数据projectModes，
- */
-// 获取最热数据的异步action
-export const onLoadPopularDataAsync = (storeName, url, pageSize) => {
-  return dispatch => {
-    dispatch({ type: POPULAR_REFRESH, storeName })
 
+export const onLoadTrendingDataAsync = (storeName, url, pageSize) => {
+  return dispatch => {
+    dispatch({ type: TRENDING_REFRESH, storeName })
     // 获取最新数据
     let dataStore = new DataStore()
     dataStore
-      .fetchData(url, FLAG_STORE.flag_popular)
+      .fetchData(url, FLAG_STORE.flag_trending)
       .then(data => {
-        handleData(POPULAR_REFRESH_SUCCESS, dispatch, storeName, data, pageSize)
+        handleData(
+          TRENDING_REFRESH_SUCCESS,
+          dispatch,
+          storeName,
+          data,
+          pageSize
+        )
       })
       .catch(err => {
         dispatch({
-          type: POPULAR_REFRESH_FAIL,
+          type: TRENDING_REFRESH_FAIL,
           storeName,
           err
         })
@@ -31,11 +33,8 @@ export const onLoadPopularDataAsync = (storeName, url, pageSize) => {
   }
 }
 
-/*
- * 加载更多，根据原始数据items和pageindex来分出下一组并存到projectModes
- */
 // 加载更多
-export const onLoadMorePopularAsync = (
+export const onLoadMoreTrendingAsync = (
   storeName,
   pageIndex,
   pageSize,
@@ -51,7 +50,7 @@ export const onLoadMorePopularAsync = (
           callBack('no more')
         }
         dispatch({
-          type: POPULAR_LOAD_MORE_SUCCESS,
+          type: TRENDING_LOAD_MORE_SUCCESS,
           error: 'no more',
           storeName: storeName,
           pageIndex: --pageIndex,
@@ -64,7 +63,7 @@ export const onLoadMorePopularAsync = (
             ? dataArray.length
             : pageSize * pageIndex
         dispatch({
-          type: POPULAR_LOAD_MORE_SUCCESS,
+          type: TRENDING_LOAD_MORE_SUCCESS,
           storeName,
           pageIndex,
           projectModes: dataArray.slice(0, max)

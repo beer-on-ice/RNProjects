@@ -5,7 +5,8 @@ import {
   Text,
   FlatList,
   RefreshControl,
-  ActivityIndicator
+  ActivityIndicator,
+  DeviceInfo
 } from 'react-native'
 import Toast from 'react-native-easy-toast'
 import { connect } from 'react-redux'
@@ -14,12 +15,14 @@ import {
   createAppContainer
 } from 'react-navigation'
 
-import { actionPopular } from './../action'
+import NavigationUtil from '../navigator/NavigationUtil'
+import { actionPopular } from '../action'
 import PopularItem from '../component/PopularItem'
+import NavigationBar from '../component/NavigationBar'
 
 const URL = `https://api.github.com/search/repositories?q=`
 const QUERY_STR = `&sort=stars`
-const THEME_COLOR = 'red'
+const THEME_COLOR = '#678'
 const PAGE_SIZE = 10
 
 // 最热页面
@@ -43,6 +46,19 @@ export default class PopularPage extends Component {
   }
 
   render() {
+    // 自定义组件NavigationBar的属性
+    let statusBar = {
+      backgroundColor: THEME_COLOR,
+      barStyle: 'light-content'
+    }
+    let navigationBar = (
+      <NavigationBar
+        title={'最热'}
+        statusBar={statusBar}
+        style={{ backgroundColor: THEME_COLOR }}
+      />
+    )
+
     const TabNavigator = createAppContainer(
       createMaterialTopTabNavigator(this._genTabs(), {
         tabBarOptions: {
@@ -50,13 +66,17 @@ export default class PopularPage extends Component {
           upperCaseLabel: false, //标签大写
           scrollEnabled: true, // 是否支持选项卡滚动，默认false
           style: {
-            backgroundColor: '#678' // tabBar背景颜色
+            backgroundColor: '#678', // tabBar背景颜色
+            height: 30 // fix 开启scrollEnable后在安卓上初次加载闪烁的问题
           }
         }
       })
     )
     return (
-      <View style={{ flex: 1 }}>
+      <View
+        style={{ flex: 1, marginTop: DeviceInfo.isIPhoneX_deprecated ? 30 : 0 }}
+      >
+        {navigationBar}
         <TabNavigator />
       </View>
     )
@@ -131,7 +151,19 @@ class PopularTab extends Component {
   // 渲染列表内容
   renderItem = data => {
     const item = data.item
-    return <PopularItem item={item} onSelect={() => {}} />
+    return (
+      <PopularItem
+        item={item}
+        onSelect={() => {
+          NavigationUtil.goPage(
+            {
+              projectModel: item
+            },
+            'DetailPage'
+          )
+        }}
+      />
+    )
   }
 
   render() {
@@ -216,14 +248,16 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     margin: 10
   },
-  tabStyle: { minWidth: 50 },
+  tabStyle: {
+    // minWidth: 50
+    padding: 0
+  },
   indicatorContainer: {
     alignItems: 'center'
   },
   labelStyle: {
     fontSize: 13,
-    marginTop: 6,
-    marginBottom: 6
+    margin: 0
   },
   indicatorStyle: {
     height: 2,
