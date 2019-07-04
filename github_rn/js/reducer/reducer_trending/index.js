@@ -20,7 +20,7 @@ const onLoadTrendingSuccess = (state, action) => {
     [action.storeName]: {
       ...state[action.storeName],
       items: action.items, // 原始数据
-      projectModes: action.projectModes, // 此次要展示的数据
+      projectModels: action.projectModels, // 此次要展示的数据
       hideLoadingMore: false,
       isLoading: false,
       pageIndex: action.pageIndex
@@ -45,7 +45,7 @@ const onLoadMoreSuccess = (state, action) => {
     ...state,
     [action.storeName]: {
       ...state[action.storeName],
-      projectModes: action.projectModes,
+      projectModels: action.projectModels,
       hideLoadingMore: false,
       pageIndex: action.pageIndex
     }

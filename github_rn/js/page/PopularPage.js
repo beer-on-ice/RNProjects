@@ -19,11 +19,15 @@ import NavigationUtil from '../navigator/NavigationUtil'
 import { actionPopular } from '../action'
 import PopularItem from '../component/PopularItem'
 import NavigationBar from '../component/NavigationBar'
+import { FLAG_STORE } from '../expand/dao/DataStore'
+import FavoriteDao from '../expand/dao/FavoriteDao'
+import FavoriteUtil from '../util/FavoriteUtil'
 
 const URL = `https://api.github.com/search/repositories?q=`
 const QUERY_STR = `&sort=stars`
 const THEME_COLOR = '#678'
 const PAGE_SIZE = 10
+const favoriteDao = new FavoriteDao(FLAG_STORE.flag_popular)
 
 // 最热页面
 export default class PopularPage extends Component {
@@ -103,7 +107,7 @@ class PopularTab extends Component {
     if (!store) {
       store = {
         items: [],
-        projectModes: [], //要显示的数据
+        projectModels: [], //要显示的数据
         isLoading: false,
         hideLoadingMore: true //默认隐藏加载更多
       }
@@ -125,13 +129,14 @@ class PopularTab extends Component {
         ++store.pageIndex,
         PAGE_SIZE,
         store.items,
+        favoriteDao,
         callBack => {
           this.refs.toast.show('没有更多了')
         }
       )
     } else {
       // 主要是刚进入时的加载，分出第一组要展示的数据
-      onLoadPopularDataAsync(this.storeName, url, PAGE_SIZE)
+      onLoadPopularDataAsync(this.storeName, url, PAGE_SIZE, favoriteDao)
     }
   }
 
@@ -153,7 +158,7 @@ class PopularTab extends Component {
     const item = data.item
     return (
       <PopularItem
-        item={item}
+        projectModel={item}
         onSelect={() => {
           NavigationUtil.goPage(
             {
@@ -162,6 +167,14 @@ class PopularTab extends Component {
             'DetailPage'
           )
         }}
+        onFavorite={(item, isFavorite) =>
+          FavoriteUtil.onFavorite(
+            FavoriteDao,
+            item,
+            isFavorite,
+            FLAG_STORE.flag_popular
+          )
+        }
       />
     )
   }
@@ -172,9 +185,9 @@ class PopularTab extends Component {
     return (
       <View style={styles.container}>
         <FlatList
-          data={store.projectModes}
+          data={store.projectModels}
           renderItem={data => this.renderItem(data)}
-          keyExtractor={item => '' + item.id}
+          keyExtractor={item => '' + item.item.id}
           refreshControl={
             <RefreshControl
               title={'Loading'}
@@ -214,16 +227,31 @@ const mapStateToProps = state => {
 }
 
 const mapDispatchToProps = dispatch => ({
-  onLoadPopularDataAsync(storeName, url, pageSize) {
-    dispatch(actionPopular.onLoadPopularDataAsync(storeName, url, pageSize))
+  onLoadPopularDataAsync(storeName, url, pageSize, favoriteDao) {
+    dispatch(
+      actionPopular.onLoadPopularDataAsync(
+        storeName,
+        url,
+        pageSize,
+        favoriteDao
+      )
+    )
   },
-  onLoadMorePopularAsync(storeName, pageIndex, pageSize, dataArray, callBack) {
+  onLoadMorePopularAsync(
+    storeName,
+    pageIndex,
+    pageSize,
+    dataArray,
+    favoriteDao,
+    callBack
+  ) {
     dispatch(
       actionPopular.onLoadMorePopularAsync(
         storeName,
         pageIndex,
         pageSize,
         dataArray,
+        favoriteDao,
         callBack
       )
     )

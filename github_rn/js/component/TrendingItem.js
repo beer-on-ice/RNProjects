@@ -2,23 +2,14 @@ import React, { Component } from 'react'
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import HTMLView from 'react-native-htmlview'
+import BaseItem from '../component/BaseItem'
 
 // 趋势Item的组件
-export default class TrendingItem extends Component {
+export default class TrendingItem extends BaseItem {
   render() {
-    const { item } = this.props
+    const { projectModel } = this.props
+    const { item } = projectModel
     if (!item) return null
-
-    // 加入收藏
-    let favoriteButton = (
-      <TouchableOpacity
-        style={{ padding: 6 }}
-        onPress={() => {}}
-        underlayColor={'transparent'}
-      >
-        <FontAwesome name={'star-o'} size={26} style={{ color: 'red' }} />
-      </TouchableOpacity>
-    )
 
     let desc = `<p>${item.description}</p>`
 
@@ -47,7 +38,7 @@ export default class TrendingItem extends Component {
                 )
               })}
             </View>
-            {favoriteButton}
+            {this._favoriteIcon()}
           </View>
         </View>
       </TouchableOpacity>

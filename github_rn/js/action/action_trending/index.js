@@ -54,7 +54,7 @@ export const onLoadMoreTrendingAsync = (
           error: 'no more',
           storeName: storeName,
           pageIndex: --pageIndex,
-          projectModes: dataArray
+          projectModels: dataArray
         })
       } else {
         // 还有数据
@@ -66,7 +66,7 @@ export const onLoadMoreTrendingAsync = (
           type: TRENDING_LOAD_MORE_SUCCESS,
           storeName,
           pageIndex,
-          projectModes: dataArray.slice(0, max)
+          projectModels: dataArray.slice(0, max)
         })
       }
     }, 500)
